@@ -13,4 +13,14 @@ int		t_count(long int nan);
 char	*ft_putnbr(long int n, char *p, int negative);
 char	*ft_itoa(int n);
 
+struct t_str
+{
+	char	*str;
+	int		i;
+	int		bit;
+	int		pid;
+	char	c;
+} s_str;
+
+
 #endif

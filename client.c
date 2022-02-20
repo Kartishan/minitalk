@@ -2,42 +2,56 @@
 #include "mini.h"
 #include <stdio.h>
 
-int	translator(int pid, char c)
-{
-	int	i;
+struct t_str	g_g;
 
-	i = 128;
-	while (i >= 1)
+void	handlerforsignal(int signal)
+{
+	if (g_g.str[g_g.i] == '\0')
+		return ;
+	g_g.bit--;
+	if (g_g.bit < 0)
 	{
-		if (i & c)
-			kill(pid, SIGUSR1);
-		else
-			kill(pid, SIGUSR2);
-		usleep(1000);
-		i /= 2;
+		g_g.bit = 8;
+		g_g.i++;
 	}
-	return (0);
+	if ((g_g.str[g_g.i] >> g_g.bit) & 1)
+	{
+		kill(g_g.pid, SIGUSR1);
+	}
+	else
+	{
+		kill(g_g.pid, SIGUSR2);
+	}
+
 }
+
 int	clientfunction(int pid, char *s)
 {
-	int	i;
-
-	i = 0;
-	while (s[i] >= 32 && s[i] <= 126)
+	g_g.pid = pid;
+	int i = 0;
+	kill(getpid(), SIGUSR1);
+	while (g_g.str[g_g.i] != '\0')
 	{
-		if (translator(pid, s[i]))
-			return (1);
-		i++;
 	}
-	usleep(1000);
 	return(0);
 }
 
 int	main(int argc, char **argv)
 {
+		
+	struct sigaction	s;
+
+	s.sa_handler = handlerforsignal;
+	g_g.str = argv[2];
+	g_g.i = 0;
+	g_g.bit = 8;
+	printf("%d\n", getpid());
 	if (argc <= 2)
 		write(1, "use ./client {pid} {messege}\n", 29);
 	else
+	{
+		sigaction(SIGUSR1, &s, NULL);
 		clientfunction(ft_atoi(argv[1]), argv[2]);
+	}
 	return (0);
 }

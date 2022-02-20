@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+struct t_str g_g;
 size_t	ft_strlen(const char *c)
 {
 	size_t	i;
@@ -16,53 +17,41 @@ size_t	ft_strlen(const char *c)
 	return (i);
 }
 
-static void	reversetranslate(char *str)
+void	mainfunction(int usersignal)
 {
-	long int	pow;
-	char		c;
-	long int	i;
-
-	i = ft_strlen(str);
-	while (i != 0)
+	if (usersignal == SIGUSR1)
+		g_g.c = (g_g.c  << 1) + 1;
+	else
+		g_g.c  = (g_g.c  << 1);
+	g_g.i++;
+	if (g_g.i == 8)
 	{
-		c += pow * (str[i] - '0');
-		pow =pow * 2;
-		i--;
+		write(1, &g_g.c, 1);
+		g_g.i = 0;
+		g_g.c = 0;
 	}
-	write(1, &c, 1);
 }
 
-static void	mainfunction(int usersignal)
+static void	handler(int sig, siginfo_t *info, void *ucontext)
 {
-	static int	i;
-	static char	buf[8];
-
-	if (buf == NULL)
-	{
-		buf[0] = ' ';
-		i = 0;
-	}
-	i++;
-	if (usersignal == SIGUSR1)
-		buf[i] += '1';
-	else
-		buf[i] += '0';
-	if (i == 7)
-	{
-		reversetranslate(buf);
-		buf == NULL;
-	}
+	mainfunction(sig);
+	kill(info->si_pid, SIGUSR1);
 }
 
 int	main(void)
 {
-	int	pid;
+	pid_t				pid;
+	struct sigaction	s;
 
-	pid = getpgid(pid);
+	s.sa_flags = SA_SIGINFO;
+	g_g.c = 0;
+	g_g.i = 0;
+	s.sa_sigaction = handler;
+	sigaction(SIGUSR1, &s, NULL);
+	sigaction(SIGUSR2, &s, NULL);
+	pid = getpid();
 	printf("%d\n", pid);
 	while (1)
 	{
-		signal(SIGUSR1, mainfunction);
-		signal(SIGUSR2, mainfunction);
 	}
 }
