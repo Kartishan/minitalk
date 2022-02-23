@@ -10,13 +10,38 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
-#include <signal.h>
 #include "mini.h"
-#include <stdlib.h>
-#include <stdio.h>
 
 struct s_str	g_g;
+
+void	ft_putnbr(int n)
+{
+	long int	t;
+	long int	nb;
+	char		c;
+	long int	nan;
+
+	nan = n;
+	if (nan < 0)
+	{
+		nan = nan * -1;
+		write(1, "-", 1);
+	}
+	nb = 1;
+	t = nan;
+	while (t > 9)
+	{
+		nb *= 10;
+		t /= 10;
+	}
+	while (nb != 0)
+	{
+		t = nan / nb % 10;
+		c = t + '0';
+		write(1, &c, 1);
+		nb /= 10;
+	}
+}
 
 void	mainfunction(int usersignal)
 {
@@ -39,6 +64,9 @@ void	mainfunction(int usersignal)
 
 static void	handler(int sig, siginfo_t *info, void *ucontext)
 {
+	char	*c;
+	usleep(30);
+	c = ucontext;
 	mainfunction(sig);
 	kill(info->si_pid, SIGUSR1);
 }
@@ -55,7 +83,8 @@ int	main(void)
 	sigaction(SIGUSR1, &s, NULL);
 	sigaction(SIGUSR2, &s, NULL);
 	pid = getpid();
-	printf("%d\n", pid);
+	ft_putnbr(pid);
+	write(1, "\n", 1);
 	while (1)
 	{
 	}
