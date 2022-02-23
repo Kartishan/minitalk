@@ -1,28 +1,33 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   server.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: pwildcat <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/02/23 12:03:43 by pwildcat          #+#    #+#             */
+/*   Updated: 2022/02/23 12:03:46 by pwildcat         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <unistd.h>
 #include <signal.h>
 #include "mini.h"
 #include <stdlib.h>
 #include <stdio.h>
 
-struct t_str g_g;
-size_t	ft_strlen(const char *c)
-{
-	size_t	i;
-
-	i = 0;
-	while (c[i] != '\0')
-	{
-		i++;
-	}
-	return (i);
-}
+struct s_str	g_g;
 
 void	mainfunction(int usersignal)
 {
 	if (usersignal == SIGUSR1)
-		g_g.c = (g_g.c  << 1) + 1;
+	{
+		g_g.c = (g_g.c << 1) + 1;
+	}
 	else
-		g_g.c  = (g_g.c  << 1);
+	{
+		g_g.c = (g_g.c << 1);
+	}
 	g_g.i++;
 	if (g_g.i == 8)
 	{
